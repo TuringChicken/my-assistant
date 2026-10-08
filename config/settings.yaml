@@ -1,0 +1,15 @@
+# Central configuration. Nothing model-related should be hard-coded elsewhere.
+
+ollama:
+  host: "http://localhost:11434"
+  model: "qwen3:8b"
+  temperature: 0.7
+
+agent:
+  # Safety cap on tool-calling rounds to avoid infinite loops.
+  max_iterations: 5
+  system_prompt: |
+    You are a helpful personal assistant running locally.
+    You have access to tools. Use a tool only when it is genuinely needed to
+    answer the user's question; otherwise answer directly.
+    Keep answers concise and accurate. Reply in the user's language.

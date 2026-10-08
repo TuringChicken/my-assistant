@@ -1,0 +1,21 @@
+[project]
+name = "local-llm-assistant"
+version = "0.1.0"
+description = "A personal assistant powered by a local LLM (Ollama + Qwen3), using Function Calling + MCP."
+requires-python = ">=3.10"
+dependencies = [
+    "ollama>=0.4.0",      # Talk to Ollama (AsyncClient + native tool calling)
+    "pyyaml>=6.0",        # Read config/settings.yaml
+    "python-dotenv>=1.0", # Read .env
+    "mcp>=1.2.0",         # MCP client (used from stage 3 onward)
+]
+
+[project.scripts]
+assistant = "assistant.main:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["assistant"]
