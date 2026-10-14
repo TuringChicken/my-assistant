@@ -46,7 +46,8 @@ Copy-Item .env.example .env   # then edit if needed
 ## Run
 
 ```powershell
-python -m assistant.main
+python -m assistant.main          # command-line chat
+python -m assistant.main --web    # Gradio web UI at http://127.0.0.1:7860
 ```
 
 Try:
@@ -80,6 +81,7 @@ assistant/
     builtin.py       # get_current_time, calculate
     mcp_client.py    # connects MCP servers over stdio
   ui/cli.py          # command-line interface
+  ui/web.py          # Gradio web UI (--web)
 config/              # settings.yaml, mcp_servers.json
 mcp_servers/         # one standalone MCP server per tool (from stage 3)
 data/                # docs the assistant may search + vector DB

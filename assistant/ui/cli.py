@@ -27,5 +27,17 @@ async def run_cli(agent: Agent, system_prompt: str | None) -> None:
             continue
 
         history.add_user(user)
-        answer = await agent.run(history)
-        print(f"\nassistant > {answer}\n")
+        print("\nassistant > ", end="", flush=True)
+        answer = await agent.run(history, on_token=_print_token, on_event=_print_event)
+        if not answer:
+            print("(empty response)", end="")
+        print("\n")
+
+
+def _print_token(token: str) -> None:
+    print(token, end="", flush=True)
+
+
+def _print_event(text: str) -> None:
+    # Leading newline: events can interrupt a line of streamed answer text.
+    print(f"\n  · {text}")

@@ -8,6 +8,7 @@ dependencies = [
     "pyyaml>=6.0",        # Read config/settings.yaml
     "python-dotenv>=1.0", # Read .env
     "mcp>=1.2.0",         # MCP client (used from stage 3 onward)
+    "gradio>=6.0",        # Web UI (`--web`)
 ]
 
 [project.scripts]

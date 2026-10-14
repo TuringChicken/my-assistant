@@ -5,6 +5,11 @@ ollama:
   model: "qwen3:8b"
   temperature: 0.7
 
+web:
+  # Gradio UI (`python -m assistant.main --web`). 127.0.0.1 = this machine only.
+  host: "127.0.0.1"
+  port: 7860
+
 agent:
   # Safety cap on tool-calling rounds to avoid infinite loops.
   max_iterations: 5

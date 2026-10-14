@@ -5,9 +5,9 @@ This is the only place that talks to the model. Swapping the backend later
 """
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, AsyncIterator
 
-from ollama import AsyncClient
+from ollama import AsyncClient, ChatResponse
 
 
 class LLMClient:
@@ -20,17 +20,16 @@ class LLMClient:
         self,
         messages: list[dict[str, Any]],
         tools: list[dict[str, Any]] | None = None,
-    ) -> Any:
-        """Send one chat request and return the raw Ollama response.
+    ) -> AsyncIterator[ChatResponse]:
+        """Send one chat request and return an async stream of response chunks.
 
-        Note: tool calling is incompatible with streaming in Ollama, so we
-        always request a non-streamed response here. Streaming of the *final*
-        answer can be added later in the UI layer.
+        Content arrives token by token; each tool call arrives whole inside a
+        single chunk. The caller is responsible for accumulating the chunks.
         """
         return await self._client.chat(
             model=self.model,
             messages=messages,
             tools=tools or None,
             options={"temperature": self.temperature},
-            stream=False,
+            stream=True,
         )

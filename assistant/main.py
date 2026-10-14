@@ -1,6 +1,7 @@
-"""Entry point: wire everything together and start the CLI."""
+"""Entry point: wire everything together and start the CLI or web UI."""
 from __future__ import annotations
 
+import argparse
 import asyncio
 
 from .agent.loop import Agent
@@ -12,11 +13,7 @@ from .tools.registry import ToolRegistry
 from .ui.cli import run_cli
 
 
-def _log_event(text: str) -> None:
-    print(f"  · {text}")
-
-
-async def amain() -> None:
+async def amain(web: bool) -> None:
     settings = load_settings()
 
     llm = LLMClient(**settings["ollama"])
@@ -24,7 +21,7 @@ async def amain() -> None:
     registry = ToolRegistry()
     register_builtin(registry)
 
-    # MCP sessions must stay open for the whole app lifetime, so keep the CLI
+    # MCP sessions must stay open for the whole app lifetime, so keep the UI
     # running inside the manager's context. With no servers configured this
     # does nothing.
     async with MCPManager() as mcp:
@@ -34,13 +31,25 @@ async def amain() -> None:
             llm=llm,
             registry=registry,
             max_iterations=settings["agent"]["max_iterations"],
-            on_event=_log_event,
         )
-        await run_cli(agent, settings["agent"]["system_prompt"])
+        system_prompt = settings["agent"]["system_prompt"]
+        if web:
+            # Imported lazily so the CLI doesn't require Gradio.
+            from .ui.web import run_web
+
+            await run_web(agent, system_prompt, **settings["web"])
+        else:
+            await run_cli(agent, system_prompt)
 
 
 def main() -> None:
-    asyncio.run(amain())
+    parser = argparse.ArgumentParser(description="Local LLM assistant")
+    parser.add_argument("--web", action="store_true", help="start the Gradio web UI")
+    args = parser.parse_args()
+    try:
+        asyncio.run(amain(web=args.web))
+    except KeyboardInterrupt:
+        pass
 
 
 if __name__ == "__main__":
